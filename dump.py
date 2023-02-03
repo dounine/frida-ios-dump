@@ -273,7 +273,7 @@ def open_target_app(device, name_or_bundleid):
     except Exception as e:
         print(e) 
 
-    return session, display_name, bundle_identifier
+    return pid, session, display_name, bundle_identifier
 
 
 def start_dump(session, ipa_name):
@@ -334,12 +334,13 @@ if __name__ == '__main__':
             ssh.connect(Host, port=Port, username=User, password=Password, key_filename=KeyFileName)
 
             create_dir(PAYLOAD_PATH)
-            (session, display_name, bundle_identifier) = open_target_app(device, name_or_bundleid)
+            (pid, session, display_name, bundle_identifier) = open_target_app(device, name_or_bundleid)
             if output_ipa is None:
                 output_ipa = display_name
             output_ipa = re.sub('\.ipa$', '', output_ipa)
             if session:
                 start_dump(session, output_ipa)
+            device.kill(pid)
         except paramiko.ssh_exception.NoValidConnectionsError as e:
             print(e)
             print('Try specifying -H/--hostname and/or -p/--port')
